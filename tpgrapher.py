@@ -21,7 +21,10 @@ def plot_regionprobs(nops, bothps, c1ps, c2ps, title, labels):
         line = plt.plot([100*i for i in data])
         plt.setp(line, color=c, linewidth=w, drawstyle="steps-mid", fillstyle="bottom")
 
-    axes = plt.gca()
+#    axes = plt.gca()
+    plt.cla()
+    fig = plt.figure(dpi=300)
+    axes = fig.add_subplot(1,1,1)
     axes.set_ylim([0,100])
     axes.set_xlim([0,len(nops)])
     plotline(nops, CYAN, 3)
@@ -31,15 +34,18 @@ def plot_regionprobs(nops, bothps, c1ps, c2ps, title, labels):
     plt.title(title, fontsize=15)
     plt.ylabel("Generalization Probability", fontsize=12)
     plt.xlabel("Combined Vocab Size", fontsize=12)
-    plt.legend(handles=[get_label(CYAN,labels[0]),get_label(BLACK,labels[3]),get_label(GOLD,labels[1]),get_label(RED,labels[2])],fontsize=15,loc="best")
-    plt.savefig(title.replace(" ","").replace("+","").replace("&","-").replace("#","") + ".png")
-    plt.show()
+    plt.legend(handles=[get_label(CYAN,labels[0]),get_label(BLACK,labels[3]),get_label(GOLD,labels[1]),get_label(RED,labels[2])],fontsize=12,loc="best")
+    plt.savefig(title.replace(" ","").replace("+","").replace("&","-").replace("#","") + ".pdf")
+#    plt.show()
 
 def prepdisp(mat):
     return 255-(255*mat).astype(np.uint8)
 
 def plot_matrix(mat, title, labels, c=None, axislabels=["",""]):
-    axes = plt.gca()
+#    axes = plt.gca()
+    plt.cla()
+    fig = plt.figure(dpi=300)
+    axes = fig.add_subplot(1,1,1)
     axes.set_ylim([-0.5,mat.shape[0]-0.5])
     axes.set_xlim([-0.5,mat.shape[1]-0.5])
     plt.imshow(mat, interpolation="nearest", cmap=c)
@@ -52,8 +58,13 @@ def plot_matrix(mat, title, labels, c=None, axislabels=["",""]):
     plt.xlabel(axislabels[0], fontsize=12)
     plt.ylabel(axislabels[1], fontsize=12)
     plt.tight_layout()
-    plt.savefig(title.replace(" ","").replace("+","").replace("&","-") + ".png")
-    plt.show()
+    if labels:
+        if len(labels) == 4:
+            plt.legend(handles=[get_label(CYAN,labels[0]),get_label(BLACK,labels[3]),get_label(GOLD,labels[1]),get_label(RED,labels[2])],fontsize=12,loc="best")
+        else:
+            plt.legend(handles=[get_label(BLACK,labels[2]),get_label(GOLD,labels[0]),get_label(RED,labels[1])],fontsize=12,loc="best")
+    plt.savefig(title.replace(" ","").replace("+","").replace("&","-") + ".pdf")
+#    plt.show()
 
 def binom(n,k):
     return float(factorial(n)) / (factorial(k) * factorial(n-k))
@@ -103,7 +114,7 @@ def display_matrices(tpmat, hypergmat, cummat, c1, c2, title, labels, axes):
     plot_matrix(1-hypergmat, "%s: Development Path Probabilities" % title, None, c="gray", axislabels=axes)
     plot_matrix(1-cummat,  "%s: Generalization Probabilities" % title, labels[1:], c="gray", axislabels=axes)
 #    plt.imshow(tpmat, interpolation="nearest")
-#    plt.imsave("tpmat_%s_%s.png"%(c1,c2), tpmat, interpolation="nearest")
+#    plt.imsave("tpmat_%s_%s.pdf"%(c1,c2), tpmat, interpolation="nearest")
 #    plt.show()
 #    plt.imshow(1-hypergmat, cmap="gray", interpolation="nearest")
 #    plt.show()
@@ -226,7 +237,7 @@ def tpmatrix(c1, c2, title, labels, axes):
 
     
 
-tpmatrix(16, 28, "Classes IV & V", ["Separate","IV Prod. in IV+V","V Prod. in IV+V","Either Prod."], ["Class V Vocab Size","Class IV Vocab Size"])
-tpmatrix(52, 44, "Classes III & IV+V", ["Separate","III Prod. in III+IV+V","IV+V Prod. in III+IV+V","Either Prod."], ["Class IV+V Vocab Size","Class III Vocab Size"])
-#tpmatrix(28, 29, "Class VI & VII vs VI+VII", ["V & VI","V -> V+VI","VI -> V+VI","V or VI -> V+VI"])
-tpmatrix(44, 29, "Classes IV+V & VI", ["Separate","IV+V Prod. in IV+V+VI","VI Prod. in IV+V+VI","Either Prod."], ["Class VI Vocab Size","Class IV+V Vocab Size"])
+tpmatrix(16, 28, "Classes IV & V", ["Separate","IV Applied to V","V Applied to IV","Either Productive"], ["# Class V Known","# Class IV Known"])
+tpmatrix(52, 44, "Classes III & IV+V", ["Separate","III Applied to IV+V","IV+V Applied to III","Either Productive"], ["# Class IV+V Known","# Class III Known"])
+#tpmatrix(28, 29, "Class VI & VII vs VI+VII", ["V & VI","V  Applied to  V+VI","VI  Applied to  V+VI","V or VI  Applied to  V+VI"])
+tpmatrix(44, 29, "Classes IV+V & VI", ["Separate","IV+V Applied to VI","VI Applied to IV+V","Either Productive"], ["# Class VI Known","# Class IV+V Known"])
